@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>User Details</h1>
+
+        <button id="loadUsersButton">Load Users</button>
+
+        <p id="message"></p>
+
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>City</th>
+                </tr>
+            </thead>
+            <tbody id="usersTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const loadUsersButton = document.getElementById("loadUsersButton");
+        const usersTable = document.getElementById("usersTable");
+        const usersTableBody = document.getElementById("usersTableBody");
+        const message = document.getElementById("message");
+
+        loadUsersButton.addEventListener("click", async function () {
+            message.textContent = "Loading users...";
+            usersTableBody.innerHTML = "";
+            usersTable.style.display = "none";
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/users");
+
+                if (!response.ok) {
+                    throw new Error("API request failed");
+                }
+
+                const users = await response.json();
+
+                if (users.length === 0) {
+                    message.textContent = "No users found.";
+                    return;
+                }
+
+                users.forEach(function (user) {
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.city}</td>
+                    `;
+
+                    usersTableBody.appendChild(row);
+                });
+
+                message.textContent = "Users loaded successfully.";
+                usersTable.style.display = "table";
+
+            } catch (error) {
+                message.textContent =
+                    "Unable to connect to the API. Make sure Flask is running.";
+                console.error(error);
+            }
+        });
+    </script>
+
+</body>
+</html>
