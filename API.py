@@ -3,18 +3,14 @@ import os
 
 app = Flask(__name__)
 
-# In-memory data store
 users = [
     {"id": 1, "name": "Raj", "city": "Chennai"},
     {"id": 2, "name": "Anita", "city": "Bangalore"}
 ]
 
-# ─── GET ───────────────────────────────────────────────
 @app.route("/")
 def home():
-    return jsonify({
-        "message": "API is running successfully"
-    })
+    return jsonify({"message": "API is running successfully"})
 
 @app.route("/users", methods=["GET"])
 def get_users():
@@ -27,7 +23,6 @@ def get_user(user_id):
         return jsonify(user), 200
     return jsonify({"error": "User not found"}), 404
 
-# ─── POST ──────────────────────────────────────────────
 @app.route("/users", methods=["POST"])
 def create_user():
     body = request.get_json()
@@ -41,7 +36,6 @@ def create_user():
     users.append(new_user)
     return jsonify({"message": "User created", "user": new_user}), 201
 
-# ─── PUT ───────────────────────────────────────────────
 @app.route("/users/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
     user = next((u for u in users if u["id"] == user_id), None)
@@ -52,7 +46,6 @@ def update_user(user_id):
     user["city"] = body.get("city", user["city"])
     return jsonify({"message": "User updated", "user": user}), 200
 
-# ─── DELETE ────────────────────────────────────────────
 @app.route("/users/<int:user_id>", methods=["DELETE"])
 def delete_user(user_id):
     user = next((u for u in users if u["id"] == user_id), None)
@@ -61,7 +54,6 @@ def delete_user(user_id):
     users.remove(user)
     return jsonify({"message": f"User {user_id} deleted successfully"}), 200
 
-# ─── Run ───────────────────────────────────────────────
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
